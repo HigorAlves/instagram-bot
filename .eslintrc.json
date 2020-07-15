@@ -85,6 +85,5 @@
         "directory": "packages/server/*/tsconfig.json"
       }
     }
-	},
-	"ignorePatterns": "jest.config.js"
+	}
 }
