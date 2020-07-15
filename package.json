@@ -4,12 +4,14 @@
   "main": "index.js",
   "repository": "https://github.com/HigorAlves/instagram-comment-bot.git",
   "author": "Higor Alves <higorhaalves@gmail.com>",
-	"license": "MIT",
-	"scripts": {
-		"start:dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts"
-	},
+  "license": "MIT",
+  "scripts": {
+    "start:dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules src/server.ts"
+  },
   "devDependencies": {
+    "@types/node": "^14.0.23",
     "ts-node-dev": "^1.0.0-pre.51",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.6"
   }
 }
