@@ -1,0 +1,15 @@
+{
+  "name": "instagram-comment-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/HigorAlves/instagram-comment-bot.git",
+  "author": "Higor Alves <higorhaalves@gmail.com>",
+	"license": "MIT",
+	"scripts": {
+		"start:dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts"
+	},
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.51",
+    "typescript": "^3.9.6"
+  }
+}
