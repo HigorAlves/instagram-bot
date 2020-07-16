@@ -9,6 +9,7 @@ import {
 	INSTAGRAM_PASSWORD,
 	INSTAGRAM_USER,
 	USER_PAGE,
+	PHOTO_TO_COMMENT,
 } from '@/Constants';
 
 class Instagram {
@@ -100,6 +101,14 @@ class Instagram {
 		console.log('[DEBUG] - Total of users get: ', list.length);
 
 		return list;
+	}
+
+	async navigateToImage(): Promise<void> {
+		const COMMENT_BUTTON = '#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span._15y0l > button';
+		await this.page.goto(PHOTO_TO_COMMENT);
+		await this.page.waitForSelector(COMMENT_BUTTON);
+		await this.page.click(COMMENT_BUTTON);
+		await this.page.waitFor(2000);
 	}
 }
 

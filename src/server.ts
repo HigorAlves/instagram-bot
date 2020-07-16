@@ -12,14 +12,14 @@ async function Init() {
 	await page.emulate(DEVICE);
 
 	const insta = new Instagram(browser, page);
-	await insta.navigateToUserPage();
 	// await insta.login();
-
-	await insta.navigateToFollowers();
-	const usersList = await insta.getFollowersList();
-
+	// await insta.navigateToUserPage();
+	// await insta.navigateToFollowers();
+	// const usersList = await insta.getFollowersList();
 	// @ts-ignore
-	fs.appendFileSync('./src/Database/userlist.txt', usersList);
+	// fs.appendFileSync('./src/Database/userlist.txt', usersList);
+
+	await insta.navigateToImage();
 	browser.close();
 }
 
