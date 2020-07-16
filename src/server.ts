@@ -34,10 +34,13 @@ async function CommentOnPost() {
 
 	const list = fs.readFileSync('./src/Database/userlist.txt', 'utf8');
 	const userNames = list.split(',');
-	for (const item of userNames) {
-		const comment = `${item} ${emoji.random().emoji}`;
+	const index = 0;
+
+	do {
+		const comment = `@${userNames[index]} ${emoji.random().emoji}`;
+		await page.waitFor(4000);
 		await insta.commentOnPost(comment);
-	}
+	} while (index < userNames.length);
 }
 
 CommentOnPost();
