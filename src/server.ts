@@ -6,7 +6,7 @@ import Instagram from '@/Controllers';
 
 import { DEVICE } from './Constants';
 
-async function Init() {
+async function LoginIntoInsta() {
 	const browser = await Puppeteer.launch({ headless: false, userDataDir: './user_data' });
 	const page = (await browser.pages())[0];
 
@@ -14,12 +14,21 @@ async function Init() {
 
 	const insta = new Instagram(browser, page);
 	await insta.login();
-	// await insta.navigateToUserPage();
-	// await insta.navigateToFollowers();
-	// const usersList = await insta.getFollowersList();
-	// // @ts-ignore
-	// fs.appendFileSync('./src/Database/userlist.txt', usersList);
 
+	browser.close();
+}
+
+async function GetListOfUsers() {
+	const browser = await Puppeteer.launch({ headless: false, userDataDir: './user_data' });
+	const page = (await browser.pages())[0];
+
+	await page.emulate(DEVICE);
+	const insta = new Instagram(browser, page);
+	await insta.navigateToUserPage();
+	await insta.navigateToFollowers();
+	const usersList = await insta.getFollowersList();
+	// @ts-ignore
+	fs.appendFileSync('./src/Database/userlist.txt', usersList);
 	browser.close();
 }
 
@@ -55,5 +64,4 @@ async function CommentOnPost() {
 	} while (index < userNames.length);
 }
 
-// Init();
 CommentOnPost();
