@@ -14,13 +14,13 @@ async function Init() {
 
 	const insta = new Instagram(browser, page);
 	await insta.login();
-	await insta.navigateToUserPage();
-	await insta.navigateToFollowers();
-	const usersList = await insta.getFollowersList();
-	// @ts-ignore
-	fs.appendFileSync('./src/Database/userlist.txt', usersList);
+	// await insta.navigateToUserPage();
+	// await insta.navigateToFollowers();
+	// const usersList = await insta.getFollowersList();
+	// // @ts-ignore
+	// fs.appendFileSync('./src/Database/userlist.txt', usersList);
 
-	// browser.close();
+	browser.close();
 }
 
 async function CommentOnPost() {
@@ -34,13 +34,26 @@ async function CommentOnPost() {
 
 	const list = fs.readFileSync('./src/Database/userlist.txt', 'utf8');
 	const userNames = list.split(',');
-	const index = 0;
+	let index = 33;
 
 	do {
-		const comment = `@${userNames[index]} ${emoji.random().emoji}`;
-		await page.waitFor(4000);
+		const comment = `@${userNames[index]}`;
+		const delay = Math.floor(Math.random() * (9 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 99;
+		index++;
+		console.log(`Tempo: ${delay} | Index: ${index} | Comment: ${comment}`);
+		await page.waitFor(delay);
 		await insta.commentOnPost(comment);
+		await page.waitFor(9000 + Math.random() * 100);
+
+		if (index % 20) {
+			await page.waitFor(20000);
+		}
+
+		if (delay > 500 + Math.random() + 27) {
+			await page.reload();
+		}
 	} while (index < userNames.length);
 }
 
+// Init();
 CommentOnPost();

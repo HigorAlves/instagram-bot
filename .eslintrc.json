@@ -61,6 +61,7 @@
 		"import/extensions": "off",
 		"no-loop-func":"off",
 		"no-await-in-loop":"off",
+		"no-plusplus": "off",
     "import-helpers/order-imports": [
       "warn",
       {

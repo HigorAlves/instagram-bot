@@ -114,13 +114,49 @@ class Instagram {
 	async commentOnPost(comment: string): Promise<void> {
 		const COMMENT_BOX = 'textarea';
 		const SUBMIT_BUTTON = 'button[type="submit"]';
+		let hasError = false;
+		const delay = Math.random() * 100 + Math.random() * 130;
 
-		await this.page.waitFor(2000);
+		await this.page.waitFor(Math.floor(Math.random() * (3 - 1 + 1) + 1) * 54 + Math.random() * 78 + Math.random() * 99);
 		await this.page.waitForSelector(COMMENT_BOX);
 
-		await this.page.type(COMMENT_BOX, comment);
+		await this.page.type(COMMENT_BOX, comment, { delay });
+		await this.page.waitFor(Math.floor(Math.random() * (2 - 1 + 1) + 1) * 28 + Math.random() * 200 + Math.random() * 24);
 		await this.page.click(SUBMIT_BUTTON);
-		await this.page.waitFor(2000);
+
+		hasError = await this.page.evaluate(() => {
+			const ERROR_BOX = 'gxNyb';
+			const elements = document.getElementsByClassName(ERROR_BOX);
+			if (elements) {
+				return true;
+			}
+			return false;
+		});
+
+		if (hasError) {
+			console.info('[DEBUG] - Error on Comment - We"ll wait some random seconds');
+			let errorCount = 0;
+			do {
+				if (errorCount > 2) {
+					console.info('[DEBUG] - Too many erros on Comment - We"ll sleep for some time');
+					await this.page.waitFor(21000 + Math.random() * 1000 + Math.random() + 201);
+				}
+
+				await this.page.waitFor(Math.floor(Math.random() * (2 - 1 + 1) + 1) * 28 + Math.random() * 200 + Math.random() * 3000);
+				await this.page.click(SUBMIT_BUTTON);
+
+				errorCount++;
+
+				hasError = await this.page.evaluate(() => {
+					const ERROR_BOX = 'gxNyb';
+					const elements = document.getElementsByClassName(ERROR_BOX);
+					if (elements) {
+						return true;
+					}
+					return false;
+				});
+			} while (hasError);
+		}
 	}
 }
 
