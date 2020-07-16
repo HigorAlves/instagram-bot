@@ -147,8 +147,9 @@ class Instagram {
 
 				errorCount++;
 
-				hasError = await this.page.evaluate(() => {
+				hasError = await this.page.evaluate(async () => {
 					const ERROR_BOX = 'gxNyb';
+					await this.page.type(COMMENT_BOX, comment, { delay });
 					const elements = document.getElementsByClassName(ERROR_BOX);
 					if (elements) {
 						return true;

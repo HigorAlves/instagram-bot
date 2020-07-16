@@ -1,5 +1,4 @@
 import fs from 'fs';
-import emoji from 'node-emoji';
 import Puppeteer from 'puppeteer';
 
 import Instagram from '@/Controllers';
@@ -64,4 +63,9 @@ async function CommentOnPost() {
 	} while (index < userNames.length);
 }
 
-CommentOnPost();
+async function init() {
+	await LoginIntoInsta();
+	await CommentOnPost();
+}
+
+init();
