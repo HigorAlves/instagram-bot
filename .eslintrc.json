@@ -8,7 +8,7 @@
 		"airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
+		"prettier/@typescript-eslint"
   ],
   "globals": {
     "Atomics": "readonly",
@@ -31,7 +31,6 @@
     "max-classes-per-file": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-console": "off",
-    "import/prefer-default-export": "off",
     "@typescript-eslint/explicit-function-return-type": ["off"],
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -57,21 +56,15 @@
     "no-underscore-dangle": "off",
     "@typescript-eslint/camelcase": "off",
     "prettier/prettier": "error",
-    "class-methods-use-this": "off",
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "ts": "never"
-      }
-    ],
+		"class-methods-use-this": "off",
+		"import/no-unresolved": "off",
+		"import/extensions": "off",
     "import-helpers/order-imports": [
       "warn",
       {
         "newlinesBetween": "always", // new line between groups
         "groups": [
           "module",
-          "/^@server\/shared/",
           "/^@/",
           ["parent", "sibling", "index"]
         ],
@@ -80,10 +73,10 @@
     ]
   },
   "settings": {
-    "import/resolver": {
+    
       "typescript": {
         "directory": "packages/server/*/tsconfig.json"
       }
     }
-	}
+	
 }
