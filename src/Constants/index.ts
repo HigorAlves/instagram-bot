@@ -8,7 +8,7 @@ export const INSTAGRAM_PASSWORD = process.env.INSTAGRAM_PASSWORD as string;
 
 export const BASE_URL = 'https://www.instagram.com';
 export const LOGIN_PAGE = `${BASE_URL}/accounts/login/`;
-export const USER_PAGE = `${BASE_URL}/micaely_lamounier/followers/`;
+export const USER_PAGE = `${BASE_URL}/higorhaalves/followers/`;
 export const DEVICE = puppeteer.devices['iPhone 6'];
 
 export const INPUT_USERNAME = 'input[name="username"]';

@@ -59,6 +59,8 @@
 		"class-methods-use-this": "off",
 		"import/no-unresolved": "off",
 		"import/extensions": "off",
+		"no-loop-func":"off",
+		"no-await-in-loop":"off",
     "import-helpers/order-imports": [
       "warn",
       {
