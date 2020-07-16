@@ -64,7 +64,7 @@ async function CommentOnPost() {
 }
 
 async function init() {
-	await LoginIntoInsta();
+	// await LoginIntoInsta();
 	await CommentOnPost();
 }
 

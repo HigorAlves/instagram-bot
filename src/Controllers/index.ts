@@ -127,7 +127,7 @@ class Instagram {
 		hasError = await this.page.evaluate(() => {
 			const ERROR_BOX = 'gxNyb';
 			const elements = document.getElementsByClassName(ERROR_BOX);
-			if (elements) {
+			if (elements.length > 0) {
 				return true;
 			}
 			return false;
