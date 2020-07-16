@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "node-emoji": "^1.10.0",
     "puppeteer": "^5.1.0"
   }
 }

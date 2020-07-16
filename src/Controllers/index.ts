@@ -110,6 +110,18 @@ class Instagram {
 		await this.page.click(COMMENT_BUTTON);
 		await this.page.waitFor(2000);
 	}
+
+	async commentOnPost(comment: string): Promise<void> {
+		const COMMENT_BOX = 'textarea';
+		const SUBMIT_BUTTON = 'button[type="submit"]';
+
+		await this.page.waitFor(2000);
+		await this.page.waitForSelector(COMMENT_BOX);
+
+		await this.page.type(COMMENT_BOX, comment);
+		await this.page.click(SUBMIT_BUTTON);
+		await this.page.waitFor(2000);
+	}
 }
 
 export default Instagram;
