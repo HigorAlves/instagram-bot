@@ -42,7 +42,7 @@ async function CommentOnPost() {
 
 	const list = fs.readFileSync('./src/Database/userlist.txt', 'utf8');
 	const userNames = list.split(',');
-	let index = 33;
+	let index = 100;
 
 	do {
 		const comment = `@${userNames[index]}`;
@@ -64,7 +64,7 @@ async function CommentOnPost() {
 }
 
 async function init() {
-	// await LoginIntoInsta();
+	await LoginIntoInsta();
 	await CommentOnPost();
 }
 
