@@ -4,7 +4,7 @@ import Puppeteer from 'puppeteer';
 import Instagram from '@/Controllers/Instagram';
 import Log from '@/Lib/Logger';
 
-import { DEVICE, BASE_URL } from './Constants';
+import { DEVICE, BASE_URL, INSTAGRAM_USER } from './Constants';
 
 const CHROMIUM_OPTIONS = {
 	slowMo: 60,
@@ -87,8 +87,8 @@ async function init() {
 	await page.goto(BASE_URL);
 
 	const insta = new Instagram(browser, page);
-	await insta.getMyInfo();
+	await insta.goToFollowersList('micaely_lamounier');
 }
 
 Log('INFO', '🎉 Bot has been initialized');
-init();
+// init();

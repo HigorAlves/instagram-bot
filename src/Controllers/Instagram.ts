@@ -75,30 +75,15 @@ class Instagram {
 		Log('INFO', 'Successful in get your data!');
 	}
 
-	async navigateToUserPage(username: string): Promise<number> {
-		try {
-			await this.page.goto(`${BASE_URL}/${username}/followers`);
-			await this.page.waitForSelector('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
-			const followers = await this.page.$('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
-			let countFollowers = 0;
-			let text: string;
+	async goToFollowersList(username: string): Promise<void> {
+		Log('INFO', `Going to ${username} followers list`);
+		const FOLLOWERS_SELECTOR = '#react-root > section > main > div > ul > li:nth-child(3)';
+		const CONTAINER_LIST_SELECTOR = '#react-root > section > main > div > ul > div > li:nth-child(1)';
 
-			if (followers) {
-				text = (await (await followers.getProperty('textContent')).jsonValue()) as string;
-				text = text.replace(',', '');
-				countFollowers = parseInt(text, 10);
-			}
-
-			return countFollowers;
-		} catch (error) {
-			throw new TypeError('[ERROR] some error message');
-		}
-	}
-
-	async navigateToUserFollowers(): Promise<void> {
-		await this.page.waitForSelector('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
-		await this.page.click('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
-		await this.page.waitFor(2000);
+		await this.page.goto(`${BASE_URL}/${username}`);
+		await this.page.waitForSelector(FOLLOWERS_SELECTOR);
+		await this.page.tap(FOLLOWERS_SELECTOR);
+		await this.page.waitForSelector(CONTAINER_LIST_SELECTOR);
 	}
 
 	async getUserFollowersList(): Promise<string[]> {

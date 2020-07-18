@@ -1,12 +1,13 @@
 import Chalk from 'chalk';
+import emoji from 'node-emoji';
 
 type IType = 'INFO' | 'DEBUG' | 'ERROR' | 'WARN';
 
 const loggerType = {
-	INFO: (message: string) => `${Chalk.bold(Chalk.cyanBright('[INFO]'))} 👩‍🚀 ${message}`,
-	DEBUG: (message: string) => `${Chalk.bold(Chalk.whiteBright('[DEBUG]'))} 👩‍🚀 ${message}`,
-	ERROR: (message: string) => `${Chalk.bold(Chalk.redBright('[ERROR]'))} 👩‍🚀 ${message}`,
-	WARN: (message: string) => `${Chalk.bold(Chalk.yellowBright('[WARN]'))} 👩‍🚀 ${message}`,
+	INFO: (message: string) => `${Chalk.bold(Chalk.cyanBright('[INFO]'))} ${emoji.get('ghost')} ${message}`,
+	DEBUG: (message: string) => `${Chalk.bold(Chalk.whiteBright('[DEBUG]'))} ${emoji.get('ghost')} ${message}`,
+	ERROR: (message: string) => `${Chalk.bold(Chalk.redBright('[ERROR]'))} ${emoji.get('ghost')} ${message}`,
+	WARN: (message: string) => `${Chalk.bold(Chalk.yellowBright('[WARN]'))} ${emoji.get('ghost')} ${message}`,
 };
 
 const Log = (type: IType, message: string): void => {
