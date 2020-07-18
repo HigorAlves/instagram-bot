@@ -4,6 +4,7 @@ import Puppeteer from 'puppeteer';
 
 import { INSTAGRAM_PASSWORD, INSTAGRAM_USER, BASE_URL, PHOTO_TO_COMMENT } from '@/Constants';
 import Log from '@/Lib/Logger';
+import scroll from '@/Lib/Scroll';
 
 class Instagram {
 	private browser!: Puppeteer.Browser;
@@ -16,6 +17,7 @@ class Instagram {
 	}
 
 	async login(): Promise<void> {
+		Log('INFO', 'Logging in');
 		const LOGIN_PAGE = `${BASE_URL}/accounts/login/`;
 		const NOT_NOW_BUTTON = '#react-root > section > main > div > div > div > button';
 		const INPUT_USERNAME = 'input[name="username"]';
@@ -24,8 +26,6 @@ class Instagram {
 		const ADD_INSTA_HOME = 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.HoLwm';
 		const NOTIFICATION_CANCEL_BUTTON = 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.HoLwm';
 		const DELAY = Math.random() * 100;
-
-		Log('INFO', 'Logging in');
 
 		await this.page.goto(LOGIN_PAGE);
 		await this.page.waitForSelector(INPUT_USERNAME);
@@ -44,9 +44,8 @@ class Instagram {
 		await this.page.waitForSelector(ADD_INSTA_HOME);
 		await this.page.click(ADD_INSTA_HOME);
 
-		await this.page.$eval('article:last-child', (e) => {
-			e.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
-		});
+		await scroll('article', this.page);
+
 		Log('INFO', 'Waiting for "Notification" pop up');
 		await this.page.waitForSelector(NOTIFICATION_CANCEL_BUTTON);
 		await this.page.tap(NOTIFICATION_CANCEL_BUTTON);

@@ -1,6 +1,6 @@
 {
   "name": "instagram-comment-bot",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": "https://github.com/HigorAlves/instagram-comment-bot.git",
   "author": "Higor Alves <higorhaalves@gmail.com>",
