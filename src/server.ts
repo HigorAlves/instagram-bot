@@ -1,20 +1,23 @@
 import fs from 'fs';
 import Puppeteer from 'puppeteer';
 
-import Instagram from '@/Controllers';
+import Instagram from '@/Controllers/Instagram';
 
 import { DEVICE } from './Constants';
 
+const CHROMIUM_OPTIONS = {
+	slowMo: 60,
+	args: ['--no-sandbox', '--disable-setuid-sandbox'],
+};
+
 async function LoginIntoInsta() {
-	const browser = await Puppeteer.launch({ headless: false, userDataDir: './user_data' });
+	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
 	const page = (await browser.pages())[0];
 
 	await page.emulate(DEVICE);
 
 	const insta = new Instagram(browser, page);
 	await insta.login();
-
-	browser.close();
 }
 
 async function GetListOfUsers() {
@@ -62,10 +65,18 @@ async function CommentOnPost() {
 		}
 	} while (index < userNames.length);
 }
+async function downloadPost() {
+	const browser = await Puppeteer.launch();
+	const page = (await browser.pages())[0];
+
+	await page.emulate(DEVICE);
+
+	const insta = new Instagram(browser, page);
+	await insta.downloadPostImage('https://www.instagram.com/p/CCn199BljJt/');
+}
 
 async function init() {
 	await LoginIntoInsta();
-	await CommentOnPost();
 }
 
 init();

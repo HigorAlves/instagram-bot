@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/server.js",
-    "start:dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules src/server.ts",
+    "start:dev": "ts-node-dev -r tsconfig-paths/register --respawn --clear --transpile-only --ignore-watch node_modules src/server.ts",
     "test": "jest",
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
     "commit": "git add . && git-cz"

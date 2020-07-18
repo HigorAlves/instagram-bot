@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import Puppeteer from 'puppeteer';
 
 import {
@@ -23,20 +25,23 @@ class Instagram {
 	}
 
 	async login(): Promise<void> {
+		const NOT_NOW_BUTTON = '#react-root > section > main > div > div > div > button';
 		await this.page.emulate(DEVICE);
 		await this.page.goto(LOGIN_PAGE);
 		await this.page.waitForSelector(INPUT_USERNAME);
+		await this.page.focus(INPUT_USERNAME);
 		await this.page.type(INPUT_USERNAME, INSTAGRAM_USER);
-		await this.page.waitFor(1000);
+		await this.page.waitFor(500);
+		await this.page.focus(INPUT_PASSWORD);
 		await this.page.type(INPUT_PASSWORD, INSTAGRAM_PASSWORD);
-		await this.page.waitFor(2000);
+		await this.page.waitFor(500);
+		await this.page.focus(SUBMIT_LOGIN_BUTTON);
 		await this.page.click(SUBMIT_LOGIN_BUTTON);
-		await this.page.waitForSelector('#react-root > section > main > div > div > div > button');
-		await this.page.click('#react-root > section > main > div > div > div > button');
-		await this.page.waitFor(2000);
+		await this.page.waitForSelector(NOT_NOW_BUTTON);
+		await this.page.click(NOT_NOW_BUTTON);
 	}
 
-	async navigateToUserPage(): Promise<number> {
+	async navigateToUserPage(username: string): Promise<number> {
 		try {
 			await this.page.goto(USER_PAGE);
 			await this.page.waitForSelector('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
@@ -57,13 +62,13 @@ class Instagram {
 		}
 	}
 
-	async navigateToFollowers(): Promise<void> {
+	async navigateToUserFollowers(): Promise<void> {
 		await this.page.waitForSelector('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
 		await this.page.click('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
 		await this.page.waitFor(2000);
 	}
 
-	async getFollowersList(): Promise<string[]> {
+	async getUserFollowersList(): Promise<string[]> {
 		await this.page.waitFor(4000);
 		let list: string[] = [];
 		let isDone = true;
@@ -103,7 +108,7 @@ class Instagram {
 		return list;
 	}
 
-	async navigateToImage(): Promise<void> {
+	async navigateToPost(): Promise<void> {
 		const COMMENT_BUTTON = '#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span._15y0l > button';
 		await this.page.goto(PHOTO_TO_COMMENT);
 		await this.page.waitForSelector(COMMENT_BUTTON);
@@ -158,6 +163,22 @@ class Instagram {
 				});
 			} while (hasError);
 		}
+	}
+
+	async downloadPostImage(post: string): Promise<void> {
+		const IMAGE_SELECTOR = '#react-root > section > main > div > div.ltEKP > article > div._97aPb.wKWK0 > div > div > div.KL4Bh > img';
+		let link = '';
+		const fileName = `${post.split('p/')[1].replace('/', '')}.png`;
+		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Images'), fileName);
+
+		await this.page.goto(post, { waitUntil: 'networkidle0' });
+		link = (await this.page.$eval(IMAGE_SELECTOR, (img) => img.getAttribute('src'))) as string;
+
+		const viewSource = (await this.page.goto(link)) as Puppeteer.Response;
+		const writeStream = fs.createWriteStream(filePath);
+
+		writeStream.write(await viewSource.buffer());
+		writeStream.close();
 	}
 }
 
