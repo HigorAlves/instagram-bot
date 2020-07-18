@@ -4,13 +4,14 @@ import Puppeteer from 'puppeteer';
 import Instagram from '@/Controllers/Instagram';
 import Log from '@/Lib/Logger';
 
-import { DEVICE } from './Constants';
+import { DEVICE, BASE_URL } from './Constants';
 
 const CHROMIUM_OPTIONS = {
 	slowMo: 60,
 	headless: false,
 	devtools: true,
 	args: ['--no-sandbox', '--disable-setuid-sandbox'],
+	userDataDir: './user_data',
 };
 
 async function LoginIntoInsta() {
@@ -79,8 +80,15 @@ async function downloadPost() {
 }
 
 async function init() {
-	Log('INFO', '🎉 Bot has been initialized');
-	LoginIntoInsta();
+	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
+	const page = (await browser.pages())[0];
+
+	await page.emulate(DEVICE);
+	await page.goto(BASE_URL);
+
+	const insta = new Instagram(browser, page);
+	await insta.getMyInfo();
 }
 
+Log('INFO', '🎉 Bot has been initialized');
 init();

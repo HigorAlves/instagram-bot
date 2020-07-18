@@ -52,6 +52,29 @@ class Instagram {
 		Log('INFO', 'Successful logging');
 	}
 
+	async getMyInfo(): Promise<void> {
+		Log('INFO', 'Going to user profile page');
+		const PROFILE_BUTTON = '#react-root > section > nav.NXc7H.f11OC > div > div > div.KGiwt > div > div > div:nth-child(5) > a';
+		const NUMBER_OF_POSTS = '#react-root > section > main > div > ul > li:nth-child(1) > span > span';
+		const NUMBER_OF_FOLLOWERS = '#react-root > section > main > div > ul > li:nth-child(2) > a > span';
+		const NUMBER_OF_FOLLOWING = '#react-root > section > main > div > ul > li:nth-child(3) > a > span';
+
+		await this.page.waitForSelector(PROFILE_BUTTON);
+		await this.page.click(PROFILE_BUTTON);
+		await this.page.waitForSelector(NUMBER_OF_POSTS);
+		let numberOfPosts = await this.page.$(NUMBER_OF_POSTS);
+		let numberOfFollowers = await this.page.$(NUMBER_OF_FOLLOWERS);
+		let numberOfFollowing = await this.page.$(NUMBER_OF_FOLLOWING);
+
+		numberOfPosts = (await (await numberOfPosts.getProperty('textContent')).jsonValue()) as string;
+		numberOfFollowers = (await (await numberOfFollowers.getProperty('textContent')).jsonValue()) as string;
+		numberOfFollowing = (await (await numberOfFollowing.getProperty('textContent')).jsonValue()) as string;
+
+		Log('INFO', `Data from your user`);
+		console.table({ posts: numberOfPosts, followers: numberOfFollowers, following: numberOfFollowing });
+		Log('INFO', 'Successful in get your data!');
+	}
+
 	async navigateToUserPage(username: string): Promise<number> {
 		try {
 			await this.page.goto(`${BASE_URL}/${username}/followers`);
