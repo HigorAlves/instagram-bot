@@ -6,4 +6,11 @@ async function scroll(item: string, page: Page): Promise<void> {
 	});
 }
 
+export async function getWindowHeight(page: Page): Promise<number> {
+	const height = await page.evaluate(() => {
+		return document.body.scrollHeight;
+	});
+	return height;
+}
+
 export default scroll;

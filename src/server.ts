@@ -88,7 +88,8 @@ async function init() {
 
 	const insta = new Instagram(browser, page);
 	await insta.goToFollowersList('micaely_lamounier');
+	await insta.getFollowersList('micaely_lamounier');
 }
 
-Log('INFO', '🎉 Bot has been initialized');
-// init();
+Log('INFO', 'Bot has been initialized');
+init();

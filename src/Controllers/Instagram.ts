@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import Puppeteer from 'puppeteer';
 
-import { INSTAGRAM_PASSWORD, INSTAGRAM_USER, BASE_URL, PHOTO_TO_COMMENT } from '@/Constants';
+import { INSTAGRAM_PASSWORD, INSTAGRAM_USER, BASE_URL } from '@/Constants';
 import Log from '@/Lib/Logger';
-import scroll from '@/Lib/Scroll';
+import scroll, { getWindowHeight } from '@/Lib/Scroll';
 
 class Instagram {
 	private browser!: Puppeteer.Browser;
@@ -78,116 +78,109 @@ class Instagram {
 	async goToFollowersList(username: string): Promise<void> {
 		Log('INFO', `Going to ${username} followers list`);
 		const FOLLOWERS_SELECTOR = '#react-root > section > main > div > ul > li:nth-child(3)';
-		const CONTAINER_LIST_SELECTOR = '#react-root > section > main > div > ul > div > li:nth-child(1)';
 
 		await this.page.goto(`${BASE_URL}/${username}`);
 		await this.page.waitForSelector(FOLLOWERS_SELECTOR);
 		await this.page.tap(FOLLOWERS_SELECTOR);
-		await this.page.waitForSelector(CONTAINER_LIST_SELECTOR);
 	}
 
-	async getUserFollowersList(): Promise<string[]> {
-		await this.page.waitFor(4000);
-		let list: string[] = [];
-		let isDone = true;
+	async goToPost(postId: string): Promise<void> {
+		Log('INFO', 'Going to post');
+		const POST_LINK = `${BASE_URL}/p/${postId}/`;
+		const POST_CONTAINER_SELECTOR = '#react-root > section > main > div > div > article';
 
-		async function getWindowHeight(page: Puppeteer.Page): Promise<number> {
-			const height = await page.evaluate(() => {
-				return document.body.scrollHeight;
+		await this.page.goto(POST_LINK);
+		await this.page.waitForSelector(POST_CONTAINER_SELECTOR);
+	}
+
+	async commentOnPost(postId: string, comment: string): Promise<void> {
+		Log('INFO', 'Going to post comment page');
+		const COMMENT_POST_LINK = `${BASE_URL}/p/${postId}/comments`;
+		const COMMENT_BOX_SELECTOR = '#react-root > section > main > section > div > form > textarea';
+		const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
+		const ERROR_BOX_SELECTOR = '.gxNyb';
+		const DELAY = Math.floor(Math.random() * (3 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 100;
+
+		await this.page.goto(COMMENT_POST_LINK);
+		await this.page.waitForSelector(COMMENT_BOX_SELECTOR);
+		await this.page.tap(COMMENT_BOX_SELECTOR);
+		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: DELAY });
+		await this.page.waitFor(Math.random() * 100 + Math.random() * 130);
+		await this.page.tap(SUBMIT_BUTTON_SELECTOR);
+
+		try {
+			await this.page.waitForSelector(ERROR_BOX_SELECTOR, { timeout: 2000 });
+			await this.page.$eval(ERROR_BOX_SELECTOR, () => {
+				Log('ERROR', 'We catch error on comment');
 			});
-			return height;
+		} catch (error) {
+			Log('INFO', 'Comment was posted');
 		}
+	}
+
+	async getFollowersList(username: string): Promise<any> {
+		Log('INFO', `Getting follower data from ${username}`);
+		const CONTAINER_LIST_SELECTOR = '#react-root > section > main > div > ul > div > li';
+		const USERNAME_SELECTOR = 'li';
 
 		let lastHeight = 0;
 		let nowHeight = await getWindowHeight(this.page);
+		let isDone = false;
+		let listOfUsers: any[] = [];
 
-		do {
-			if (lastHeight === nowHeight) {
-				isDone = false;
-			} else {
-				lastHeight = nowHeight;
-				list = await this.page.evaluate(() => {
-					const data = [];
-					const elements = document.getElementsByClassName('FPmhX notranslate  _0imsa ');
-					for (const element of elements) data.push(element.textContent);
-					// @ts-ignore
-					document.scrollingElement.scrollBy(0, document.body.scrollHeight);
-					return data as string[];
-				});
-				await this.page.waitFor(4000);
-				nowHeight = await getWindowHeight(this.page);
-			}
+		try {
+			await this.page.waitForSelector(CONTAINER_LIST_SELECTOR, { timeout: 5000 });
 
-			await this.page.waitFor(2000);
-		} while (isDone);
-
-		console.log('[DEBUG] - Total of users get: ', list.length);
-
-		return list;
-	}
-
-	async navigateToPost(): Promise<void> {
-		const COMMENT_BUTTON = '#react-root > section > main > div > div > article > div.eo2As > section.ltpMr.Slqrh > span._15y0l > button';
-		await this.page.goto(PHOTO_TO_COMMENT);
-		await this.page.waitForSelector(COMMENT_BUTTON);
-		await this.page.click(COMMENT_BUTTON);
-		await this.page.waitFor(2000);
-	}
-
-	async commentOnPost(comment: string): Promise<void> {
-		const COMMENT_BOX = 'textarea';
-		const SUBMIT_BUTTON = 'button[type="submit"]';
-		let hasError = false;
-		const delay = Math.random() * 100 + Math.random() * 130;
-
-		await this.page.waitFor(Math.floor(Math.random() * (3 - 1 + 1) + 1) * 54 + Math.random() * 78 + Math.random() * 99);
-		await this.page.waitForSelector(COMMENT_BOX);
-
-		await this.page.type(COMMENT_BOX, comment, { delay });
-		await this.page.waitFor(Math.floor(Math.random() * (2 - 1 + 1) + 1) * 28 + Math.random() * 200 + Math.random() * 24);
-		await this.page.click(SUBMIT_BUTTON);
-
-		hasError = await this.page.evaluate(() => {
-			const ERROR_BOX = 'gxNyb';
-			const elements = document.getElementsByClassName(ERROR_BOX);
-			if (elements.length > 0) {
-				return true;
-			}
-			return false;
-		});
-
-		if (hasError) {
-			console.info('[DEBUG] - Error on Comment - We"ll wait some random seconds');
-			let errorCount = 0;
-			do {
-				if (errorCount > 2) {
-					console.info('[DEBUG] - Too many erros on Comment - We"ll sleep for some time');
-					await this.page.waitFor(21000 + Math.random() * 1000 + Math.random() + 201);
-				}
-
-				await this.page.waitFor(Math.floor(Math.random() * (2 - 1 + 1) + 1) * 28 + Math.random() * 200 + Math.random() * 3000);
-				await this.page.click(SUBMIT_BUTTON);
-
-				errorCount++;
-
-				hasError = await this.page.evaluate(async () => {
-					const ERROR_BOX = 'gxNyb';
-					await this.page.type(COMMENT_BOX, comment, { delay });
-					const elements = document.getElementsByClassName(ERROR_BOX);
-					if (elements) {
-						return true;
+			try {
+				do {
+					if (lastHeight === nowHeight) {
+						isDone = true;
+					} else {
+						lastHeight = nowHeight;
+						await scroll('li', this.page);
+						await this.page.waitFor(3000);
+						nowHeight = await getWindowHeight(this.page);
 					}
-					return false;
-				});
-			} while (hasError);
+				} while (!isDone);
+			} catch (error) {
+				Log('WARN', 'Something in the listing went wrong, possibly reached the rate limit.');
+				Log('WARN', 'But I will still register the data that was possible to get.');
+			}
+
+			listOfUsers = await this.page.$$eval(USERNAME_SELECTOR, (elements) => {
+				const data = [];
+
+				for (const element of elements) {
+					if (element.getElementsByClassName('_0imsa')[0] !== undefined) {
+						const name = element.getElementsByClassName('_0imsa')[0].innerHTML;
+						const user = element.getElementsByClassName('wFPL8')[0].innerHTML;
+						const picture = element.getElementsByClassName('_6q-tv')[0].getAttribute('src') as string;
+						let verified = false;
+
+						if (element.getElementsByClassName('coreSpriteVerifiedBadge')[0] !== undefined) {
+							verified = true;
+						}
+
+						data.push({ name, username: user, verified, picture });
+					}
+				}
+				return data;
+			});
+			Log('INFO', `Total of users that I get: ${listOfUsers.length}`);
+		} catch (error) {
+			console.log(error);
+			Log('ERROR', 'Seems Instagram is blocking me 😭.');
+			Log('ERROR', 'But dont be afraid, just wait some time and try again');
+			Log('ERROR', 'This is because of rate limit on instagram');
 		}
+		return listOfUsers;
 	}
 
 	async downloadPostImage(post: string): Promise<void> {
 		const IMAGE_SELECTOR = '#react-root > section > main > div > div.ltEKP > article > div._97aPb.wKWK0 > div > div > div.KL4Bh > img';
-		let link = '';
 		const fileName = `${post.split('p/')[1].replace('/', '')}.png`;
 		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Images'), fileName);
+		let link = '';
 
 		await this.page.goto(post, { waitUntil: 'networkidle0' });
 		link = (await this.page.$eval(IMAGE_SELECTOR, (img) => img.getAttribute('src'))) as string;
