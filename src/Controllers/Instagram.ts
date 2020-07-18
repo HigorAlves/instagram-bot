@@ -37,19 +37,23 @@ class Instagram {
 		await this.page.waitFor(DELAY);
 		await this.page.focus(SUBMIT_BUTTON);
 		await this.page.click(SUBMIT_BUTTON);
-		Log('INFO', 'Waiting for "Dont save" pop up');
-		await this.page.waitForSelector(NOT_NOW_BUTTON);
-		await this.page.click(NOT_NOW_BUTTON);
-		Log('INFO', 'Waiting for "Add insta to Home" pop up');
-		await this.page.waitForSelector(ADD_INSTA_HOME);
-		await this.page.click(ADD_INSTA_HOME);
 
-		await scroll('article', this.page);
-
-		Log('INFO', 'Waiting for "Notification" pop up');
-		await this.page.waitForSelector(NOTIFICATION_CANCEL_BUTTON);
-		await this.page.tap(NOTIFICATION_CANCEL_BUTTON);
-		Log('INFO', 'Successful logging');
+		try {
+			Log('INFO', 'Waiting for "Dont save" pop up');
+			await this.page.waitForSelector(NOT_NOW_BUTTON);
+			await this.page.click(NOT_NOW_BUTTON);
+			Log('INFO', 'Waiting for "Add insta to Home" pop up');
+			await this.page.waitForSelector(ADD_INSTA_HOME);
+			await this.page.click(ADD_INSTA_HOME);
+			await scroll('article', this.page);
+			Log('INFO', 'Waiting for "Notification" pop up');
+			await this.page.waitForSelector(NOTIFICATION_CANCEL_BUTTON);
+			await this.page.tap(NOTIFICATION_CANCEL_BUTTON);
+		} catch (error) {
+			Log('WARN', 'Seems to be ok');
+		} finally {
+			Log('INFO', 'Successful logging');
+		}
 	}
 
 	async getMyInfo(): Promise<void> {
@@ -99,12 +103,13 @@ class Instagram {
 		const COMMENT_BOX_SELECTOR = '#react-root > section > main > section > div > form > textarea';
 		const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
 		const ERROR_BOX_SELECTOR = '.gxNyb';
-		const DELAY = Math.floor(Math.random() * (3 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 100;
+
+		Log('INFO', `Commenting on the post: ${comment}`);
 
 		await this.page.goto(COMMENT_POST_LINK);
 		await this.page.waitForSelector(COMMENT_BOX_SELECTOR);
 		await this.page.tap(COMMENT_BOX_SELECTOR);
-		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: DELAY });
+		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: 300 });
 		await this.page.waitFor(Math.random() * 100 + Math.random() * 130);
 		await this.page.tap(SUBMIT_BUTTON_SELECTOR);
 
