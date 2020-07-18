@@ -2,17 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import Puppeteer from 'puppeteer';
 
-import {
-	DEVICE,
-	LOGIN_PAGE,
-	INPUT_PASSWORD,
-	INPUT_USERNAME,
-	SUBMIT_LOGIN_BUTTON,
-	INSTAGRAM_PASSWORD,
-	INSTAGRAM_USER,
-	USER_PAGE,
-	PHOTO_TO_COMMENT,
-} from '@/Constants';
+import { INSTAGRAM_PASSWORD, INSTAGRAM_USER, BASE_URL, PHOTO_TO_COMMENT } from '@/Constants';
+import Log from '@/Lib/Logger';
 
 class Instagram {
 	private browser!: Puppeteer.Browser;
@@ -25,25 +16,46 @@ class Instagram {
 	}
 
 	async login(): Promise<void> {
+		const LOGIN_PAGE = `${BASE_URL}/accounts/login/`;
 		const NOT_NOW_BUTTON = '#react-root > section > main > div > div > div > button';
-		await this.page.emulate(DEVICE);
+		const INPUT_USERNAME = 'input[name="username"]';
+		const INPUT_PASSWORD = 'input[name="password"]';
+		const SUBMIT_BUTTON = 'button[type="submit"]';
+		const ADD_INSTA_HOME = 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.HoLwm';
+		const NOTIFICATION_CANCEL_BUTTON = 'body > div.RnEpo.Yx5HN > div > div > div > div.mt3GC > button.aOOlW.HoLwm';
+		const DELAY = Math.random() * 100;
+
+		Log('INFO', 'Logging in');
+
 		await this.page.goto(LOGIN_PAGE);
 		await this.page.waitForSelector(INPUT_USERNAME);
-		await this.page.focus(INPUT_USERNAME);
+		await this.page.click(INPUT_USERNAME);
 		await this.page.type(INPUT_USERNAME, INSTAGRAM_USER);
-		await this.page.waitFor(500);
-		await this.page.focus(INPUT_PASSWORD);
+		await this.page.waitFor(DELAY);
+		await this.page.click(INPUT_PASSWORD);
 		await this.page.type(INPUT_PASSWORD, INSTAGRAM_PASSWORD);
-		await this.page.waitFor(500);
-		await this.page.focus(SUBMIT_LOGIN_BUTTON);
-		await this.page.click(SUBMIT_LOGIN_BUTTON);
+		await this.page.waitFor(DELAY);
+		await this.page.focus(SUBMIT_BUTTON);
+		await this.page.click(SUBMIT_BUTTON);
+		Log('INFO', 'Waiting for "Dont save" pop up');
 		await this.page.waitForSelector(NOT_NOW_BUTTON);
 		await this.page.click(NOT_NOW_BUTTON);
+		Log('INFO', 'Waiting for "Add insta to Home" pop up');
+		await this.page.waitForSelector(ADD_INSTA_HOME);
+		await this.page.click(ADD_INSTA_HOME);
+
+		await this.page.$eval('article:last-child', (e) => {
+			e.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
+		});
+		Log('INFO', 'Waiting for "Notification" pop up');
+		await this.page.waitForSelector(NOTIFICATION_CANCEL_BUTTON);
+		await this.page.tap(NOTIFICATION_CANCEL_BUTTON);
+		Log('INFO', 'Successful logging');
 	}
 
 	async navigateToUserPage(username: string): Promise<number> {
 		try {
-			await this.page.goto(USER_PAGE);
+			await this.page.goto(`${BASE_URL}/${username}/followers`);
 			await this.page.waitForSelector('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
 			const followers = await this.page.$('#react-root > section > main > div > ul > li:nth-child(2) > a > span');
 			let countFollowers = 0;
@@ -57,8 +69,7 @@ class Instagram {
 
 			return countFollowers;
 		} catch (error) {
-			console.log(error);
-			return 0;
+			throw new TypeError('[ERROR] some error message');
 		}
 	}
 

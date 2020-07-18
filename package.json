@@ -38,6 +38,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
     "node-emoji": "^1.10.0",
     "puppeteer": "^5.1.0"

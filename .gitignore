@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 user_data
+cookies.json

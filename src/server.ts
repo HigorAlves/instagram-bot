@@ -2,11 +2,14 @@ import fs from 'fs';
 import Puppeteer from 'puppeteer';
 
 import Instagram from '@/Controllers/Instagram';
+import Log from '@/Lib/Logger';
 
 import { DEVICE } from './Constants';
 
 const CHROMIUM_OPTIONS = {
 	slowMo: 60,
+	headless: false,
+	devtools: true,
 	args: ['--no-sandbox', '--disable-setuid-sandbox'],
 };
 
@@ -76,7 +79,8 @@ async function downloadPost() {
 }
 
 async function init() {
-	await LoginIntoInsta();
+	Log('INFO', '🎉 Bot has been initialized');
+	LoginIntoInsta();
 }
 
 init();
