@@ -1,10 +1,11 @@
 import fs from 'fs';
+import path from 'path';
 import Puppeteer from 'puppeteer';
 
 import Instagram from '@/Controllers/Instagram';
 import Log from '@/Lib/Logger';
 
-import { DEVICE, BASE_URL, INSTAGRAM_USER } from './Constants';
+import { DEVICE, BASE_URL } from './Constants';
 
 const CHROMIUM_OPTIONS = {
 	slowMo: 60,
@@ -25,17 +26,19 @@ async function LoginIntoInsta() {
 }
 
 async function GetListOfUsers() {
-	const browser = await Puppeteer.launch({ headless: false, userDataDir: './user_data' });
+	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
 	const page = (await browser.pages())[0];
+	const insta = new Instagram(browser, page);
+	const user = 'micaely_lamounier';
+	const filePath = path.resolve(path.join('.', '/src', '/Database', '/Followers'), user);
 
 	await page.emulate(DEVICE);
-	const insta = new Instagram(browser, page);
-	await insta.navigateToUserPage();
-	await insta.navigateToFollowers();
-	const usersList = await insta.getFollowersList();
-	// @ts-ignore
-	fs.appendFileSync('./src/Database/userlist.txt', usersList);
-	browser.close();
+	await page.goto(BASE_URL);
+	await insta.goToFollowersList(user);
+
+	const lisOfUsers = await insta.getFollowersList(user);
+
+	fs.writeFileSync(filePath, JSON.stringify(lisOfUsers));
 }
 
 async function CommentOnPost() {
@@ -76,19 +79,11 @@ async function downloadPost() {
 	await page.emulate(DEVICE);
 
 	const insta = new Instagram(browser, page);
-	await insta.downloadPostImage('https://www.instagram.com/p/CCn199BljJt/');
+	await insta.downloadPostImage('CCn199BljJt');
 }
 
 async function init() {
-	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
-	const page = (await browser.pages())[0];
-
-	await page.emulate(DEVICE);
-	await page.goto(BASE_URL);
-
-	const insta = new Instagram(browser, page);
-	await insta.goToFollowersList('micaely_lamounier');
-	await insta.getFollowersList('micaely_lamounier');
+	await GetListOfUsers();
 }
 
 Log('INFO', 'Bot has been initialized');

@@ -6,6 +6,7 @@ dotenv.config();
 export const DEVICE = puppeteer.devices['iPhone 6'];
 export const CHROMIUM_OPTIONS = {
 	slowMo: 60,
+	headless: true,
 	args: ['--no-sandbox', '--disable-setuid-sandbox'],
 };
 

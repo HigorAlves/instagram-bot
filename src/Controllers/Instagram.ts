@@ -152,8 +152,8 @@ class Instagram {
 
 				for (const element of elements) {
 					if (element.getElementsByClassName('_0imsa')[0] !== undefined) {
-						const name = element.getElementsByClassName('_0imsa')[0].innerHTML;
-						const user = element.getElementsByClassName('wFPL8')[0].innerHTML;
+						const user = element.getElementsByClassName('_0imsa')[0].innerHTML;
+						const name = element.getElementsByClassName('wFPL8')[0].innerHTML;
 						const picture = element.getElementsByClassName('_6q-tv')[0].getAttribute('src') as string;
 						let verified = false;
 
@@ -176,14 +176,14 @@ class Instagram {
 		return listOfUsers;
 	}
 
-	async downloadPostImage(post: string): Promise<void> {
+	async downloadPostImage(postId: string): Promise<void> {
+		const POST_LINK = `${BASE_URL}/p/${postId}`;
 		const IMAGE_SELECTOR = '#react-root > section > main > div > div.ltEKP > article > div._97aPb.wKWK0 > div > div > div.KL4Bh > img';
-		const fileName = `${post.split('p/')[1].replace('/', '')}.png`;
+		const fileName = `${postId}.png`;
 		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Images'), fileName);
-		let link = '';
 
-		await this.page.goto(post, { waitUntil: 'networkidle0' });
-		link = (await this.page.$eval(IMAGE_SELECTOR, (img) => img.getAttribute('src'))) as string;
+		await this.page.goto(POST_LINK, { waitUntil: 'networkidle0' });
+		const link = (await this.page.$eval(IMAGE_SELECTOR, (img) => img.getAttribute('src'))) as string;
 
 		const viewSource = (await this.page.goto(link)) as Puppeteer.Response;
 		const writeStream = fs.createWriteStream(filePath);
