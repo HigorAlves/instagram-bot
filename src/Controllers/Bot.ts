@@ -29,13 +29,13 @@ export default class Bot {
 		await loadCookies(this.page);
 		const isLogged = await this.insta.isLoggedIn();
 
-		if (!isLogged) {
+		if (isLogged) {
+			Log('INFO', 'Session successfully restored');
+		} else {
 			Log('INFO', 'No users logged in, logging in with your account');
 			await this.insta.login();
 			Log('INFO', 'Saving cookies');
 			await saveCookies(this.page);
-		} else {
-			Log('INFO', 'Session successfully restored');
 		}
 	}
 
@@ -47,12 +47,12 @@ export default class Bot {
 		do {
 			index++;
 
-			const delayMinutes = Math.random() * (5 - 1) + 1 * 60000;
+			const delayMinutes = Math.random() * (6 - 1) + 1 * 60000;
 			const delay = Math.floor(Math.random() * (9 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 99;
 			const comment = `@${userList[index].username}`;
 
 			if (index % 10 === 0) {
-				Log('INFO', 'We made 10 comments now we will wait some time to continue');
+				Log('INFO', `We made ${index} comments now we will wait ${Math.round(delayMinutes / 60000)} time to continue`);
 				await this.page.waitFor(delayMinutes);
 			}
 
