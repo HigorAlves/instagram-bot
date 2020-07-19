@@ -42,17 +42,17 @@ export default class Bot {
 	async commentOnPost(listOfComment: string, postId: string): Promise<void> {
 		const loadFile = fs.readFileSync(`./src/Database/Followers/${listOfComment}.json`, 'utf8');
 		const userList: [{ username: string }] = JSON.parse(loadFile);
-		let index = 0;
+		let index = 60;
 
 		do {
 			index++;
 
-			const delayMinutes = Math.random() * (6 - 1) + 1 * 60000;
+			const delayMinutes = (Math.random() * (6 - 1) + 1) * 60000;
 			const delay = Math.floor(Math.random() * (9 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 99;
 			const comment = `@${userList[index].username}`;
 
 			if (index % 10 === 0) {
-				Log('INFO', `We made ${index} comments now we will wait ${Math.round(delayMinutes / 10000)} time to continue`);
+				Log('INFO', `We made ${index} comments now we will wait ${Math.round(delayMinutes / 10000)} minutes to continue`);
 				await this.page.waitFor(delayMinutes);
 			}
 

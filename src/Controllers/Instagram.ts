@@ -92,6 +92,15 @@ class Instagram {
 
 	async goToFollowersList(username: string): Promise<void> {
 		Log('INFO', `Going to ${username} followers list`);
+		const FOLLOWERS_SELECTOR = '#react-root > section > main > div > ul > li:nth-child(2)';
+
+		await this.page.goto(`${BASE_URL}/${username}`);
+		await this.page.waitForSelector(FOLLOWERS_SELECTOR);
+		await this.page.tap(FOLLOWERS_SELECTOR);
+	}
+
+	async goToFollowingList(username: string): Promise<void> {
+		Log('INFO', `Going to ${username} followers list`);
 		const FOLLOWERS_SELECTOR = '#react-root > section > main > div > ul > li:nth-child(3)';
 
 		await this.page.goto(`${BASE_URL}/${username}`);
@@ -114,7 +123,7 @@ class Instagram {
 		const COMMENT_BOX_SELECTOR = '#react-root > section > main > section > div > form > textarea';
 		const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
 		const ERROR_BOX_SELECTOR = '.HGN2m';
-		const delayMinutes = Math.random() * (8 - 1) + 1 * 60000;
+		const delayMinutes = (Math.random() * (8 - 1) + 1) * 60000;
 		const url = await this.page.url();
 
 		if (url !== COMMENT_POST_LINK) {
