@@ -3,7 +3,6 @@ import path from 'path';
 import Puppeteer from 'puppeteer';
 
 import { DEVICE, BASE_URL } from '@/Constants';
-import FB from '@/Controllers/Facebook';
 import Instagram from '@/Controllers/Instagram';
 import { getCookies, setCookies } from '@/Lib/Cookies';
 import Log from '@/Lib/Logger';
@@ -86,8 +85,16 @@ async function downloadPost() {
 async function init() {
 	// await LoginIntoInsta();
 	// await CommentOnPost();
-	const fb = new FB();
-	await fb.getAuthToken();
+	const user = 'higorhaalves';
+	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS_DEV);
+	const page = (await browser.pages())[0];
+	const insta = new Instagram(browser, page);
+	const list = fs.readFileSync(`./src/Database/Followers/${user}.json`, 'utf8');
+	const userList: [] = JSON.parse(list);
+
+	await page.emulate(DEVICE);
+	insta.isLoggedIn();
+	insta.getUserInfo(user);
 }
 
 Log('INFO', 'Bot has been initialized');
