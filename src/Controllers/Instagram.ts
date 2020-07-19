@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import Puppeteer, { ElementHandle } from 'puppeteer';
 
 import { INSTAGRAM_PASSWORD, INSTAGRAM_USER, BASE_URL } from '@/Constants';
@@ -59,6 +57,7 @@ class Instagram {
 	async isLoggedIn(): Promise<boolean> {
 		const LOGIN_BUTTON_SELECTOR = '.dfm5c';
 
+		await this.page.goto(BASE_URL);
 		try {
 			await this.page.waitForSelector(LOGIN_BUTTON_SELECTOR, { timeout: 3000 });
 			Log('WARN', 'No user logged in, you need to login to use the me!');
@@ -123,7 +122,7 @@ class Instagram {
 
 		await this.page.waitForSelector(COMMENT_BOX_SELECTOR);
 		await this.page.tap(COMMENT_BOX_SELECTOR);
-		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: 300 });
+		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: 100 + Math.random() * 20 });
 		await this.page.waitFor(Math.random() * 100 + Math.random() * 130);
 		await this.page.tap(SUBMIT_BUTTON_SELECTOR);
 
@@ -133,12 +132,15 @@ class Instagram {
 			Log('WARN', 'To avoid problems i will wait 10 minutes');
 			await this.page.waitFor(10 * 60000);
 			await this.page.tap(SUBMIT_BUTTON_SELECTOR);
+			Log('INFO', 'Im back to the job');
 		} catch (error) {
 			Log('INFO', 'Comment posted');
 		}
 	}
 
 	async getFollowersList(username: string): Promise<any> {
+		await this.goToFollowersList(username);
+
 		Log('INFO', `Getting follower data from ${username}`);
 		const CONTAINER_LIST_SELECTOR = '#react-root > section > main > div > ul > div > li';
 		const USERNAME_SELECTOR = 'li';
@@ -196,20 +198,15 @@ class Instagram {
 		return listOfUsers;
 	}
 
-	async downloadPostImage(postId: string): Promise<void> {
+	async downloadPostImage(postId: string): Promise<Puppeteer.Response> {
 		const POST_LINK = `${BASE_URL}/p/${postId}`;
 		const IMAGE_SELECTOR = '#react-root > section > main > div > div.ltEKP > article > div._97aPb.wKWK0 > div > div > div.KL4Bh > img';
-		const fileName = `${postId}.png`;
-		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Images'), fileName);
 
 		await this.page.goto(POST_LINK, { waitUntil: 'networkidle0' });
 		const link = (await this.page.$eval(IMAGE_SELECTOR, (img) => img.getAttribute('src'))) as string;
 
 		const viewSource = (await this.page.goto(link)) as Puppeteer.Response;
-		const writeStream = fs.createWriteStream(filePath);
-
-		writeStream.write(await viewSource.buffer());
-		writeStream.close();
+		return viewSource;
 	}
 }
 
