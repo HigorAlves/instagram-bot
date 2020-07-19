@@ -2,15 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import Puppeteer from 'puppeteer';
 
+import { DEVICE, BASE_URL } from '@/Constants';
+import FB from '@/Controllers/Facebook';
 import Instagram from '@/Controllers/Instagram';
+import { getCookies, setCookies } from '@/Lib/Cookies';
 import Log from '@/Lib/Logger';
-
-import { DEVICE, BASE_URL, CHROMIUM_OPTIONS } from './Constants';
 
 const CHROMIUM_OPTIONS_DEV = {
 	slowMo: 60,
 	headless: false,
-	devtools: true,
+	devtools: false,
 	args: ['--no-sandbox', '--disable-setuid-sandbox'],
 	userDataDir: './user_data',
 };
@@ -23,6 +24,7 @@ async function LoginIntoInsta() {
 
 	const insta = new Instagram(browser, page);
 	await insta.login();
+	await getCookies(page);
 	browser.close();
 }
 
@@ -50,9 +52,10 @@ async function CommentOnPost() {
 	const list = fs.readFileSync(`./src/Database/Followers/${user}.json`, 'utf8');
 	const userList: [] = JSON.parse(list);
 	const delayMinutes = 5 * 60000;
-	let index = 32;
+	let index = 60;
 
 	await page.emulate(DEVICE);
+	await setCookies(page);
 
 	do {
 		const comment = `@${userList[index].username}`;
@@ -82,7 +85,9 @@ async function downloadPost() {
 
 async function init() {
 	// await LoginIntoInsta();
-	await CommentOnPost();
+	// await CommentOnPost();
+	const fb = new FB();
+	await fb.getAuthToken();
 }
 
 Log('INFO', 'Bot has been initialized');

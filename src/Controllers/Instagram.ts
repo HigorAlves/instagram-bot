@@ -118,8 +118,9 @@ class Instagram {
 		try {
 			await this.page.waitForSelector(ERROR_BOX_SELECTOR, { timeout: 2000 });
 			Log('WARN', 'We catch error on comment, this could be rate limit.');
-			Log('WARN', 'To avoid problems i will wait 20 minutes');
-			await this.page.waitFor(20 * 60000);
+			Log('WARN', 'To avoid problems i will wait 10 minutes');
+			await this.page.waitFor(10 * 60000);
+			await this.page.tap(SUBMIT_BUTTON_SELECTOR);
 		} catch (error) {
 			Log('INFO', 'Comment posted');
 		}
