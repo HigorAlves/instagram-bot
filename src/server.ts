@@ -5,6 +5,8 @@ import Bot from '@/Controllers/Bot';
 import Log from '@/Lib/Logger';
 
 async function init() {
+	Log('INFO', 'Bot has been initialized');
+
 	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
 	const page = (await browser.pages())[0];
 	const bot = new Bot(page, browser);
@@ -14,5 +16,4 @@ async function init() {
 	await bot.commentOnPost('higorhaalves', 'CCThaM8nqYm');
 }
 
-Log('INFO', 'Bot has been initialized');
 init();

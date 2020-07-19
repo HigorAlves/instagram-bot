@@ -130,7 +130,7 @@ class Instagram {
 		try {
 			await this.page.waitForSelector(ERROR_BOX_SELECTOR, { timeout: 2000 });
 			Log('WARN', 'We catch error on comment, this could be rate limit.');
-			Log('WARN', `To avoid problems i will wait ${Math.round(delayMinutes / 60000)} minutes`);
+			Log('WARN', `To avoid problems i will wait ${Math.round(delayMinutes / 10000)} minutes`);
 			await this.page.waitFor(delayMinutes);
 			await this.page.tap(SUBMIT_BUTTON_SELECTOR);
 			Log('INFO', 'Im back to the job');
@@ -199,7 +199,7 @@ class Instagram {
 		return listOfUsers;
 	}
 
-	async downloadPostImage(postId: string): Promise<Puppeteer.Response> {
+	async getPostImage(postId: string): Promise<Puppeteer.Response> {
 		const POST_LINK = `${BASE_URL}/p/${postId}`;
 		const IMAGE_SELECTOR = '#react-root > section > main > div > div.ltEKP > article > div._97aPb.wKWK0 > div > div > div.KL4Bh > img';
 

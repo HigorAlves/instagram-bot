@@ -52,7 +52,7 @@ export default class Bot {
 			const comment = `@${userList[index].username}`;
 
 			if (index % 10 === 0) {
-				Log('INFO', `We made ${index} comments now we will wait ${Math.round(delayMinutes / 60000)} time to continue`);
+				Log('INFO', `We made ${index} comments now we will wait ${Math.round(delayMinutes / 10000)} time to continue`);
 				await this.page.waitFor(delayMinutes);
 			}
 
@@ -63,7 +63,7 @@ export default class Bot {
 		Log('INFO', 'All comments have been posted');
 	}
 
-	async GetListOfUsers(username: string): Promise<void> {
+	async saveListOfFollower(username: string): Promise<void> {
 		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Followers'), `${username}.json`);
 		const list = await this.insta.getFollowersList(username);
 		fs.writeFileSync(filePath, JSON.stringify(list));
@@ -73,7 +73,7 @@ export default class Bot {
 		const fileName = `${postId}.png`;
 		const filePath = path.resolve(path.join('.', '/src', '/Database', '/Images'), fileName);
 		const writeStream = fs.createWriteStream(filePath);
-		const image = await this.insta.downloadPostImage(postId);
+		const image = await this.insta.getPostImage(postId);
 
 		writeStream.write(await image.buffer());
 		writeStream.close();
