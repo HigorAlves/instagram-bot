@@ -27,10 +27,10 @@ async function LoginIntoInsta() {
 }
 
 async function GetListOfUsers() {
-	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS);
+	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS_DEV);
 	const page = (await browser.pages())[0];
 	const insta = new Instagram(browser, page);
-	const user = 'micaely_lamounier';
+	const user = 'higorhaalves';
 	const filePath = path.resolve(path.join('.', '/src', '/Database', '/Followers'), `${user}.json`);
 
 	await page.emulate(DEVICE);
@@ -43,13 +43,14 @@ async function GetListOfUsers() {
 }
 
 async function CommentOnPost() {
-	const user = 'micaely_lamounier';
+	const user = 'higorhaalves';
 	const browser = await Puppeteer.launch(CHROMIUM_OPTIONS_DEV);
 	const page = (await browser.pages())[0];
 	const insta = new Instagram(browser, page);
 	const list = fs.readFileSync(`./src/Database/Followers/${user}.json`, 'utf8');
-	const userList = JSON.parse(list);
-	let index = 0;
+	const userList: [] = JSON.parse(list);
+	const delayMinutes = 5 * 60000;
+	let index = 32;
 
 	await page.emulate(DEVICE);
 
@@ -57,14 +58,17 @@ async function CommentOnPost() {
 		const comment = `@${userList[index].username}`;
 		const delay = Math.floor(Math.random() * (9 - 1 + 1) + 1) * 100 + Math.random() * 100 + Math.random() * 99;
 		index++;
-		Log('INFO', `Time: ${delay} | Index: ${index} | Comment: ${comment}`);
 
-		await page.waitFor(delay);
+		if (index % 10 === 0) {
+			Log('INFO', 'We made 10 comments now we will wait some time to continue');
+			await page.waitFor(delayMinutes);
+		}
+
 		await insta.commentOnPost('CCThaM8nqYm', comment);
-		await page.waitFor(4000 + Math.random() * 500);
-	} while (index < 30);
+		await page.waitFor(delay);
+	} while (index < userList.length);
 
-	Log('INFO', 'I"ts done');
+	Log('INFO', 'All comments have been posted');
 }
 async function downloadPost() {
 	const browser = await Puppeteer.launch();

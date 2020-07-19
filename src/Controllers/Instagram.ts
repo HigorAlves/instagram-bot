@@ -98,15 +98,17 @@ class Instagram {
 	}
 
 	async commentOnPost(postId: string, comment: string): Promise<void> {
-		Log('INFO', 'Going to post comment page');
-		const COMMENT_POST_LINK = `${BASE_URL}/p/${postId}/comments`;
+		Log('INFO', 'Starting comment post');
+		const COMMENT_POST_LINK = `${BASE_URL}/p/${postId}/comments/`;
 		const COMMENT_BOX_SELECTOR = '#react-root > section > main > section > div > form > textarea';
 		const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
-		const ERROR_BOX_SELECTOR = '.gxNyb';
+		const ERROR_BOX_SELECTOR = '.HGN2m';
+		const url = await this.page.url();
 
-		Log('INFO', `Commenting on the post: ${comment}`);
+		if (url !== COMMENT_POST_LINK) {
+			await this.page.goto(COMMENT_POST_LINK);
+		}
 
-		await this.page.goto(COMMENT_POST_LINK);
 		await this.page.waitForSelector(COMMENT_BOX_SELECTOR);
 		await this.page.tap(COMMENT_BOX_SELECTOR);
 		await this.page.type(COMMENT_BOX_SELECTOR, comment, { delay: 300 });
@@ -115,11 +117,11 @@ class Instagram {
 
 		try {
 			await this.page.waitForSelector(ERROR_BOX_SELECTOR, { timeout: 2000 });
-			await this.page.$eval(ERROR_BOX_SELECTOR, () => {
-				Log('ERROR', 'We catch error on comment');
-			});
+			Log('WARN', 'We catch error on comment, this could be rate limit.');
+			Log('WARN', 'To avoid problems i will wait 20 minutes');
+			await this.page.waitFor(20 * 60000);
 		} catch (error) {
-			Log('INFO', 'Comment was posted');
+			Log('INFO', 'Comment posted');
 		}
 	}
 
