@@ -123,8 +123,9 @@ class Instagram {
 		const COMMENT_BOX_SELECTOR = '#react-root > section > main > section > div > form > textarea';
 		const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
 		const ERROR_BOX_SELECTOR = '.HGN2m';
-		const delayMinutes = (Math.random() * (8 - 1) + 1) * 60000;
 		const url = await this.page.url();
+		const ms = Math.random() * (5 - 1) + 1;
+		const delay = Math.round(ms * (1000 * 60));
 
 		if (url !== COMMENT_POST_LINK) {
 			await this.page.goto(COMMENT_POST_LINK);
@@ -139,12 +140,12 @@ class Instagram {
 		try {
 			await this.page.waitForSelector(ERROR_BOX_SELECTOR, { timeout: 2000 });
 			Log('WARN', 'We catch error on comment, this could be rate limit.');
-			Log('WARN', `To avoid problems i will wait ${Math.round(delayMinutes / 10000)} minutes`);
-			await this.page.waitFor(delayMinutes);
+			Log('WARN', `To avoid problems i will wait ${Math.round(delay / (1000 * 60))} minutes`);
+			await this.page.waitFor(delay);
 			await this.page.tap(SUBMIT_BUTTON_SELECTOR);
 			Log('INFO', 'Im back to the job');
 		} catch (error) {
-			Log('INFO', 'Comment posted');
+			Log('INFO', '✅ Comment posted');
 		}
 	}
 
